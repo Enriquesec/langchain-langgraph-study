@@ -15,6 +15,7 @@ build/
 venv/
 env/
 ENV/
+llm_study/
 
 # Jupyter
 .ipynb_checkpoints/
