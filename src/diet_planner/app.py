@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 import gradio as gr
 
 # Resolver imports desde cualquier directorio de ejecución
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 load_dotenv(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env")))
 
 from diet_planner import DietChatbot
