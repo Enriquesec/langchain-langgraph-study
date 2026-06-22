@@ -16,7 +16,7 @@ print("=" * 70)
 
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 print("✓ Importaciones completadas")
 print("  - Pydantic: para validar entrada/salida")
@@ -101,25 +101,21 @@ print("=" * 70)
 print("PASO 4: Crear prompt descriptor de la tarea")
 print("=" * 70)
 
-prompt = ChatPromptTemplate.from_messages([
-    ("system", """Eres un experto en detección de fraude financiero.
+prompt = PromptTemplate.from_template("""Eres un experto en detección de fraude financiero.
 Analiza transferencias y clasifica como 'Usual' o 'Inusual'.
 
 Banderas rojas: offshore, anónimo, lavado de dinero, paraíso fiscal.
 Normales: alquiler, servicios, compras, pagos regulares.
 
-Sé conciso y preciso."""),
-    ("human", """Analiza:
+Analiza:
 - ID: {id_movimiento}
 - Monto: ${monto:,.2f} USD
 - Concepto: "{concepto}"
 
-Retorna análisis estructurado.""")
-])
+Retorna análisis estructurado. Sé conciso y preciso.""")
 
-print("✓ Prompt template creado con:")
-print("  - Mensaje system: contexto y reglas")
-print("  - Mensaje human: variables {id_movimiento}, {monto}, {concepto}")
+print("✓ Prompt template creado con PromptTemplate:")
+print("  - Variables: {id_movimiento}, {monto}, {concepto}")
 print()
 
 # ============================================================================
@@ -165,15 +161,15 @@ print("=" * 70)
 def analyze_transfer(transfer: TransferenceInput) -> TransferenceAnalysis:
     """Analizar una transferencia con manejo de errores."""
     try:
-        # Construir mensaje reemplazando variables
-        messages = prompt.invoke({
-            "id_movimiento": transfer.id_movimiento,
-            "monto": transfer.monto,
-            "concepto": transfer.concepto
-        })
+        # Construir prompt reemplazando variables con PromptTemplate.format()
+        prompt_text = prompt.format(
+            id_movimiento=transfer.id_movimiento,
+            monto=transfer.monto,
+            concepto=transfer.concepto
+        )
 
         # Invocar structured_llm (retorna TransferenceAnalysis validado)
-        analysis = structured_llm.invoke(messages)
+        analysis = structured_llm.invoke(prompt_text)
 
         # El modelo valida automáticamente contra TransferenceAnalysis
         # Si retorna datos inválidos, Pydantic lanza ValidationError

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 # Importar LangChain
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 # Importar modelos locales (definidos con Pydantic en models.py)
 from .models import TransferenceInput, TransferenceAnalysis
@@ -46,25 +46,21 @@ class TransferenceAnalyzer:
         # Esto obliga al modelo a retornar salida validada contra TransferenceAnalysis
         self.structured_llm = self.llm.with_structured_output(TransferenceAnalysis)
 
-        # 3. Definir el prompt descriptor de la tarea
-        self.prompt_template = ChatPromptTemplate.from_messages([
-            ("system", """Eres un experto en detección de fraude financiero. Analiza transacciones de transferencia para determinar si son 'Usual' o 'Inusual' basándose en el concepto/descripción.
+        # 3. Definir el prompt descriptor de la tarea usando PromptTemplate
+        self.prompt_template = PromptTemplate.from_template(
+            """Eres un experto en detección de fraude financiero. Analiza transacciones de transferencia para determinar si son 'Usual' o 'Inusual' basándose en el concepto/descripción.
 
 Reglas de clasificación:
 - 'Usual': Operaciones comerciales estándar, transferencias personales, pagos, alquiler, servicios, etc.
 - 'Inusual': Banderas rojas como terminología inusual, patrones sospechosos, indicadores de lavado de dinero, palabras clave de alto riesgo.
 
-Proporciona:
-1. Clasificación clara (Usual o Inusual)
-2. Si es Inusual: explica las banderas rojas específicas detectadas
-3. Sé conciso y preciso en tu análisis."""),
-            ("human", """Analiza esta transferencia:
+Analiza esta transferencia:
 - ID Movimiento: {id_movimiento}
 - Monto: ${monto:,.2f} USD
 - Concepto: "{concepto}"
 
-Proporciona tu análisis estructurado.""")
-        ])
+Proporciona tu análisis estructurado. Clasificación clara (Usual o Inusual) y si es inusual, explica las banderas rojas específicas detectadas."""
+        )
 
     def analyze(self, transference: TransferenceInput) -> TransferenceAnalysis:
         """
@@ -84,15 +80,15 @@ Proporciona tu análisis estructurado.""")
             if not isinstance(transference, TransferenceInput):
                 raise TypeError("El argumento debe ser una instancia de TransferenceInput")
 
-            # Construir mensaje usando el template
-            messages = self.prompt_template.invoke({
-                "id_movimiento": transference.id_movimiento,
-                "monto": transference.monto,
-                "concepto": transference.concepto
-            })
+            # Construir prompt usando PromptTemplate
+            prompt_text = self.prompt_template.format(
+                id_movimiento=transference.id_movimiento,
+                monto=transference.monto,
+                concepto=transference.concepto
+            )
 
             # Invocar modelo estructurado (retorna TransferenceAnalysis validado)
-            analysis = self.structured_llm.invoke(messages)
+            analysis = self.structured_llm.invoke(prompt_text)
 
             # Validación de salida
             if not isinstance(analysis, TransferenceAnalysis):
