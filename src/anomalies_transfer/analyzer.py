@@ -7,6 +7,7 @@ from langchain_core.prompts import PromptTemplate
 
 # Importar modelos locales (definidos con Pydantic en models.py)
 from .models import TransferenceInput, TransferenceAnalysis
+from .cache import get_cached_analysis, save_to_cache
 
 load_dotenv()
 
@@ -62,12 +63,13 @@ Analiza esta transferencia:
 Proporciona tu análisis estructurado. Clasificación clara (Usual o Inusual) y si es inusual, explica las banderas rojas específicas detectadas."""
         )
 
-    def analyze(self, transference: TransferenceInput) -> TransferenceAnalysis:
+    def analyze(self, transference: TransferenceInput, use_cache: bool = True) -> TransferenceAnalysis:
         """
         Analizar una transferencia individual.
 
         Args:
             transference: TransferenceInput validado por Pydantic
+            use_cache: Si True, usar caché para evitar llamadas API (default: True)
 
         Returns:
             TransferenceAnalysis con resultado e información
@@ -79,6 +81,12 @@ Proporciona tu análisis estructurado. Clasificación clara (Usual o Inusual) y 
             # Validación de entrada (Pydantic ya valida en TransferenceInput)
             if not isinstance(transference, TransferenceInput):
                 raise TypeError("El argumento debe ser una instancia de TransferenceInput")
+
+            # Intentar obtener del caché primero
+            if use_cache:
+                cached_analysis = get_cached_analysis(transference)
+                if cached_analysis:
+                    return cached_analysis
 
             # Construir prompt usando PromptTemplate
             prompt_text = self.prompt_template.format(
@@ -93,6 +101,10 @@ Proporciona tu análisis estructurado. Clasificación clara (Usual o Inusual) y 
             # Validación de salida
             if not isinstance(analysis, TransferenceAnalysis):
                 raise ValueError("La salida del modelo no es una TransferenceAnalysis válida")
+
+            # Guardar en caché
+            if use_cache:
+                save_to_cache(transference, analysis)
 
             return analysis
 

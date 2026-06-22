@@ -46,3 +46,5 @@ data/
 
 # LangChain cache
 .langchain.db
+.cache.json
+src/anomalies_transfer/.cache.json
