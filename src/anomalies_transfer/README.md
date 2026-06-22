@@ -10,7 +10,7 @@ Analiza el concepto/descripción de una transferencia financiera y clasifica si 
 
 | Campo | Tipo | Restricciones |
 |-------|------|--------------|
-| `id_movimiento` | str | 1-50 caracteres |
+| `id_movimiento` | str | 8 dígitos numéricos |
 | `monto` | float | > 0 (USD) |
 | `concepto` | str | 1-125 caracteres |
 
@@ -18,10 +18,9 @@ Analiza el concepto/descripción de una transferencia financiera y clasifica si 
 
 ```python
 {
-    "id_movimiento": "TRX001",
+    "id_movimiento": "12345601",
     "resultado": "Usual" | "Inusual",
-    "razon_si_inusual": "Optional description of red flags",
-    "confianza": 0.95  # Confidence score 0-1
+    "razon_si_inusual": "Optional description of red flags"
 }
 ```
 
@@ -35,16 +34,15 @@ from anomalies_transfer import TransferenceAnalyzer, TransferenceInput
 analyzer = TransferenceAnalyzer()
 
 transfer = TransferenceInput(
-    id_movimiento="TRX001",
+    id_movimiento="12345601",
     monto=1500.00,
     concepto="Pago de servicios mensuales"
 )
 
 result = analyzer.analyze(transfer)
 print(f"Resultado: {result.resultado}")
-print(f"Confianza: {result.confianza:.1%}")
 if result.razon_si_inusual:
-    print(f"Razón: {result.razon_si_inusual}")
+    print(f"Razon: {result.razon_si_inusual}")
 ```
 
 ### Batch Analysis

@@ -16,27 +16,27 @@ def main():
 
     test_cases = [
         TransferenceInput(
-            id_movimiento="TRX001",
+            id_movimiento="10001001",
             monto=1500.00,
             concepto="Pago de servicios mensuales"
         ),
         TransferenceInput(
-            id_movimiento="TRX002",
+            id_movimiento="10001002",
             monto=50000.00,
             concepto="Transferencia a cuenta offshore sin documentación"
         ),
         TransferenceInput(
-            id_movimiento="TRX003",
+            id_movimiento="10001003",
             monto=250.50,
             concepto="Compra de artículos de oficina"
         ),
         TransferenceInput(
-            id_movimiento="TRX004",
+            id_movimiento="10001004",
             monto=100000.00,
             concepto="Lavado de dinero operativo"
         ),
         TransferenceInput(
-            id_movimiento="TRX005",
+            id_movimiento="10001005",
             monto=3200.00,
             concepto="Alquiler mensual del departamento"
         ),
@@ -55,7 +55,6 @@ def main():
         result = analyzer.analyze(transference)
 
         print(f"✓ Result: {result.resultado}")
-        print(f"  Confidence: {result.confianza:.1%}")
 
         if result.razon_si_inusual:
             print(f"  ⚠️  Reason: {result.razon_si_inusual}")

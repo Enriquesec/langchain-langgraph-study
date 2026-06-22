@@ -4,9 +4,8 @@ from typing import Optional
 
 class TransferenceInput(BaseModel):
     id_movimiento: str = Field(
-        description="Unique identifier for the transfer movement",
-        min_length=1,
-        max_length=50
+        description="Numeric identifier for the transfer movement (8 digits)",
+        pattern="^\\d{8}$"
     )
     monto: float = Field(
         description="Transfer amount in USD (must be positive)",
@@ -21,7 +20,7 @@ class TransferenceInput(BaseModel):
 
 class TransferenceAnalysis(BaseModel):
     id_movimiento: str = Field(
-        description="The transfer movement ID"
+        description="The transfer movement ID (8 digits)"
     )
     resultado: str = Field(
         description="Classification: 'Usual' or 'Inusual'",
@@ -31,9 +30,4 @@ class TransferenceAnalysis(BaseModel):
         description="Explanation if the transfer is marked as 'Inusual', None if 'Usual'",
         default=None,
         max_length=500
-    )
-    confianza: float = Field(
-        description="Confidence score from 0 to 1",
-        ge=0,
-        le=1
     )
