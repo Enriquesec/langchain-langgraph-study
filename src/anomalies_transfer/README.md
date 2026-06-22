@@ -1,12 +1,12 @@
-# Transfer Anomaly Detection 🔍
+# Transfer Anomaly Detection
 
 Chatbot para detectar transferencias financieras inusuales usando LangChain y Gemini 2.5 Flash.
 
-## 📋 Overview
+## Overview
 
 Analiza el concepto/descripción de una transferencia financiera y clasifica si es **Usual** o **Inusual** basándose en patrones sospechosos y red flags de lavado de dinero.
 
-## 🎯 Inputs
+## Inputs
 
 | Campo | Tipo | Restricciones |
 |-------|------|--------------|
@@ -14,7 +14,7 @@ Analiza el concepto/descripción de una transferencia financiera y clasifica si 
 | `monto` | float | > 0 (USD) |
 | `concepto` | str | 1-125 caracteres |
 
-## 📤 Outputs
+## Outputs
 
 ```python
 {
@@ -25,7 +25,7 @@ Analiza el concepto/descripción de una transferencia financiera y clasifica si 
 }
 ```
 
-## 💻 Usage
+## Usage
 
 ### Python Script
 
@@ -62,7 +62,7 @@ results = analyzer.analyze_batch(transfers)
 
 Ver `notebooks/03_anomalias_transferencias.ipynb` para ejemplos interactivos.
 
-## 🔍 Anomaly Detection Logic
+## Anomaly Detection Logic
 
 El sistema detecta patrones inusuales como:
 - Transferencias a paraísos fiscales sin documentación
@@ -71,7 +71,7 @@ El sistema detecta patrones inusuales como:
 - Falta de descripción clara del propósito
 - Terminología sospechosa
 
-## ⚙️ Configuration
+## Configuration
 
 El analizador requiere la variable de entorno `GOOGLE_API_KEY`:
 
@@ -85,13 +85,13 @@ O crear un archivo `.env` en la raíz del proyecto:
 GOOGLE_API_KEY=your_api_key_here
 ```
 
-## 📊 Temperature & Model
+## Temperature & Model
 
 - **Modelo**: `gemini-2.5-flash`
 - **Temperature**: 0.3 (bajo, para respuestas consistentes)
 - **Configuración**: Personalizable en `TransferenceAnalyzer.__init__()`
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Ejecutar análisis de ejemplo
@@ -101,7 +101,7 @@ python -m src.anomalies_transfer.main
 jupyter notebook notebooks/03_anomalias_transferencias.ipynb
 ```
 
-## 📚 Architecture
+## Architecture
 
 ```
 src/anomalies_transfer/
@@ -112,7 +112,7 @@ src/anomalies_transfer/
 └── README.md            # Este archivo
 ```
 
-## 🎓 Learning Resources
+## Learning Resources
 
 - [LangChain Structured Output](https://python.langchain.com/docs/guides/structured_output)
 - [Gemini API Docs](https://ai.google.dev/docs)
